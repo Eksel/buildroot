@@ -61,7 +61,6 @@ endif
 
 ifeq ($(BR2_PACKAGE_XLIB_LIBXFT)$(BR2_PACKAGE_XLIB_LIBXRENDER),yy)
 	PANGO_DEPENDENCIES += xlib_libXft xlib_libXrender
-#	PANGO_CONF_OPT += --with-xft
 endif
 
 define PANGO_INSTALL_INITSCRIPT
