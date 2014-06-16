@@ -1,0 +1,47 @@
+config BR2_PACKAGE_LIBGTK3
+	bool "libgtk3"
+	select BR2_PACKAGE_ATK
+	select BR2_PACKAGE_CAIRO
+	select BR2_PACKAGE_CAIRO_PS
+	select BR2_PACKAGE_CAIRO_PDF
+	select BR2_PACKAGE_CAIRO_SVG
+	select BR2_PACKAGE_LIBGLIB2
+	select BR2_PACKAGE_PANGO
+	select BR2_PACKAGE_GDK_PIXBUF
+	select BR2_PACKAGE_FONTCONFIG
+	select BR2_PACKAGE_XLIB_LIBX11
+	select BR2_PACKAGE_XLIB_LIBXEXT
+	select BR2_PACKAGE_XLIB_LIBXRENDER
+	select BR2_PACKAGE_XLIB_LIBXI # required for building X11 backend
+	select BR2_PACKAGE_AT_SPI2_ATK
+	depends on BR2_PACKAGE_XORG7
+	depends on BR2_USE_WCHAR # glib2
+	depends on BR2_TOOLCHAIN_HAS_THREADS # glib2
+	depends on BR2_USE_MMU # glib2
+	depends on BR2_INSTALL_LIBSTDCPP # pango
+	help
+	  The GTK+ version 3 graphical user interface library
+
+	  http://www.gtk.org/
+
+if BR2_PACKAGE_LIBGTK3
+
+config BR2_PACKAGE_LIBGTK3_DEMO
+	bool "Install libgtk3 demo program"
+	help
+	  The GTK+ source base contains demo programs. This
+	  option allows to install this program to the target.
+
+config BR2_PACKAGE_LIBGTK3_TESTS
+	bool "Install libgtk3 tests"
+	help
+	  The GTK+ source base contains tests. This option
+	  allows to install them to the target.
+
+endif
+
+comment "libgtk3 needs a toolchain w/ wchar, threads, C++"
+	depends on BR2_USE_MMU
+	depends on BR2_PACKAGE_XORG7
+	depends on !BR2_USE_WCHAR || !BR2_INSTALL_LIBSTDCPP || \
+		!BR2_TOOLCHAIN_HAS_THREADS
