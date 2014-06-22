@@ -588,6 +588,7 @@ endmenu
 menu "Graphics"
 	source "package/atk/Config.in"
 	source "package/at-spi2-core/Config.in"
+	source "package/at-spi2-atk/Config.in"
 	source "package/cairo/Config.in"
 	source "package/fltk/Config.in"
 	source "package/fontconfig/Config.in"

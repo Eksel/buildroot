@@ -1,0 +1,16 @@
+config BR2_PACKAGE_AT_SPI2_ATK
+	bool "at-spi2-atk"
+	select BR2_PACKAGE_LIBGLIB2
+	select BR2_PACKAGE_DBUS
+	select BR2_PACKAGE_ATK
+	select BR2_PACKAGE_AT_SPI2_CORE
+	depends on BR2_PACKAGE_XORG7 # at-spi2-core
+	depends on BR2_USE_WCHAR # libglib2
+	depends on BR2_TOOLCHAIN_HAS_THREADS # libglib2
+	depends on BR2_USE_MMU # libglib2
+	help
+	  AT-SPI 2 Toolkit Bridge
+
+comment "at-spi2-atk needs a toolchain w/wchar, threads"
+	depends on !BR2_USE_MMU
+	depends on !BR2_USE_WCHAR || !BR2_TOOLCHAIN_HAS_THREADS
