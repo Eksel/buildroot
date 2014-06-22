@@ -1,0 +1,79 @@
+From 03ffeeb29389b547d555a8d1d4a2b16eabfc3385 Mon Sep 17 00:00:00 2001
+From: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+Date: Wed, 25 Jun 2014 19:45:28 +0200
+Subject: [PATCH] configure: use AC_CHECK_ALIGNOF() instead of custom
+ DBIND_CHECK_ALIGNOF()
+
+DBIND_CHECK_ALIGNOF() is a custom autoconf macro from at-spi2-core
+that tests the alignment required on the current platform for a given
+C type. Unfortunately, this macro uses AC_TRY_RUN(), which requires
+running a test program on the target platform, which is fundamentally
+incompatible with cross-compilation.
+
+Therefore, this patch switches the configure.ac code to use
+AC_CHECK_ALIGNOF() instead, which is available in the standard set of
+autoconf macros, and is able to test the required alignment for C
+types without using AC_TRY_RUN(). Consequently, it adjusts the
+dbind/dbind-config.h.in definitions to use the definitions created by
+the AC_CHECK_ALIGNOF() macros, which are not substituted by autoconf,
+but directly available from config.h.
+
+Signed-off-by: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+---
+ configure.ac            | 18 ++++++++++--------
+ dbind/dbind-config.h.in | 16 ++++++++--------
+ 2 files changed, 18 insertions(+), 16 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index a330453..b997301 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -196,14 +196,16 @@ AC_SUBST(LIBTOOL_EXPORT_OPTIONS)
+ dnl find sizes & alignments
+ orig_CPPFLAGS=$CPPFLAGS
+ CPPFLAGS="$CPPFLAGS $DBUS_CFLAGS"
+-DBIND_CHECK_ALIGNOF(char)
+-DBIND_CHECK_ALIGNOF(dbus_bool_t)
+-DBIND_CHECK_ALIGNOF(dbus_int16_t)
+-DBIND_CHECK_ALIGNOF(dbus_int32_t)
+-DBIND_CHECK_ALIGNOF(dbus_int64_t)
+-DBIND_CHECK_ALIGNOF(double)
+-DBIND_CHECK_ALIGNOF(dbind_pointer)
+-DBIND_CHECK_ALIGNOF(dbind_struct)
++AC_CHECK_ALIGNOF(char)
++AC_CHECK_ALIGNOF(dbus_bool_t, [#include <dbus/dbus.h>])
++AC_CHECK_ALIGNOF(dbus_int16_t, [#include <dbus/dbus.h>])
++AC_CHECK_ALIGNOF(dbus_int32_t, [#include <dbus/dbus.h>])
++AC_CHECK_ALIGNOF(dbus_int64_t, [#include <dbus/dbus.h>])
++AC_CHECK_ALIGNOF(double, [#include <dbus/dbus.h>])
++AC_CHECK_ALIGNOF(dbind_pointer, [AC_INCLUDES_DEFAULT
++typedef void *dbind_pointer;])
++AC_CHECK_ALIGNOF(dbind_struct, [AC_INCLUDES_DEFAULT
++typedef struct {char s1;} dbind_struct;])
+ 
+ GTK_DOC_CHECK([1.09])
+ 
+diff --git a/dbind/dbind-config.h.in b/dbind/dbind-config.h.in
+index 3da421e..779c4c6 100644
+--- a/dbind/dbind-config.h.in
++++ b/dbind/dbind-config.h.in
+@@ -1,8 +1,8 @@
+-#define DBIND_ALIGNOF_CHAR          @DBIND_ALIGNOF_CHAR@
+-#define DBIND_ALIGNOF_DBIND_POINTER @DBIND_ALIGNOF_DBIND_POINTER@
+-#define DBIND_ALIGNOF_DBIND_STRUCT  @DBIND_ALIGNOF_DBIND_STRUCT@
+-#define DBIND_ALIGNOF_DBUS_BOOL_T   @DBIND_ALIGNOF_DBUS_BOOL_T@
+-#define DBIND_ALIGNOF_DBUS_INT16_T  @DBIND_ALIGNOF_DBUS_INT16_T@
+-#define DBIND_ALIGNOF_DBUS_INT32_T  @DBIND_ALIGNOF_DBUS_INT32_T@
+-#define DBIND_ALIGNOF_DBUS_INT64_T  @DBIND_ALIGNOF_DBUS_INT64_T@
+-#define DBIND_ALIGNOF_DOUBLE        @DBIND_ALIGNOF_DOUBLE@
++#define DBIND_ALIGNOF_CHAR          ALIGNOF_CHAR
++#define DBIND_ALIGNOF_DBIND_POINTER ALIGNOF_DBIND_POINTER
++#define DBIND_ALIGNOF_DBIND_STRUCT  ALIGNOF_DBIND_STRUCT
++#define DBIND_ALIGNOF_DBUS_BOOL_T   ALIGNOF_DBUS_BOOL_T
++#define DBIND_ALIGNOF_DBUS_INT16_T  ALIGNOF_DBUS_INT16_T
++#define DBIND_ALIGNOF_DBUS_INT32_T  ALIGNOF_DBUS_INT32_T
++#define DBIND_ALIGNOF_DBUS_INT64_T  ALIGNOF_DBUS_INT64_T
++#define DBIND_ALIGNOF_DOUBLE        ALIGNOF_DOUBLE
+-- 
+2.0.0
+
