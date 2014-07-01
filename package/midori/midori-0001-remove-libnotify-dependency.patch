@@ -1,0 +1,27 @@
+Remove the libnotify dependency.
+
+For now there is no libnotify package in Buildroot and this feature does not
+seem necessary.
+
+Signed-off-by: Hadrien Boutteville <hadrien.boutteville@gmail.com>
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -143,16 +143,7 @@
+     endif ()
+ endif ()
+ 
+-if (WIN32)
+-    add_definitions("-DLIBNOTIFY_VERSION=\"No\"")
+-else ()
+-    pkg_check_modules(NOTIFY REQUIRED libnotify)
+-    add_definitions("-DLIBNOTIFY_VERSION=\"${NOTIFY_VERSION}\"")
+-    add_definitions("-DHAVE_LIBNOTIFY")
+-    set(OPTS_INCLUDE_DIRS "${OPTS_INCLUDE_DIRS};${NOTIFY_INCLUDE_DIRS}")
+-    set(OPTS_LIBRARIES "${OPTS_LIBRARIES};${NOTIFY_LIBRARIES}")
+-    set(PKGS ${PKGS} libnotify)
+-endif ()
++add_definitions("-DLIBNOTIFY_VERSION=\"No\"")
+ 
+ option(USE_GTK3 "Use GTK+3" OFF)
+ option(HALF_BRO_INCOM_WEBKIT2 "Serve as a guniea pig" OFF)
